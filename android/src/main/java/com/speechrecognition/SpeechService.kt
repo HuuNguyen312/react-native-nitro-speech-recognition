@@ -223,6 +223,7 @@ class SpeechService(
                 // do nothing
             }
             speech?.destroy()
+            speech = null
             stopRecording()
             soundState = SoundState.INACTIVE
             sendEvent("end", null)

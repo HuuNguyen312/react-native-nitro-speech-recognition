@@ -24,6 +24,12 @@ android {
     versionName "0.1.0"
   }
 
+  externalNativeBuild {
+    cmake {
+      path "CMakeLists.txt"
+    }
+  }
+
   lintOptions {
     abortOnError false
   }
