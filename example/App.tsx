@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import {
   AudioEncodingAndroid,
-  ExpoSpeechRecognitionModule,
+  SpeechRecognitionModule,
   useSpeechRecognitionEvent,
   TaskHintIOS,
   AVAudioSessionCategory,
@@ -22,7 +22,7 @@ import type {
   AVAudioSessionCategoryValue,
   AVAudioSessionModeValue,
   AVAudioSessionCategoryOptionsValue,
-  ExpoSpeechRecognitionOptions,
+  SpeechRecognitionOptions,
   SetCategoryOptions,
 } from "expo-speech-recognition";
 import { useEffect, useRef, useState } from "react";
@@ -45,7 +45,7 @@ import { TranscribeLocalAudioFileDemo } from "./components/TranscribeLocalAudioF
 import { TranscribeRemoteAudioFileDemo } from "./components/TranscribeRemoteAudioFileDemo";
 
 const speechRecognitionServices =
-  ExpoSpeechRecognitionModule.getSpeechRecognitionServices();
+  SpeechRecognitionModule.getSpeechRecognitionServices();
 
 export default function App() {
   const [error, setError] = useState<{ error: string; message: string } | null>(
@@ -59,7 +59,7 @@ export default function App() {
     "idle",
   );
 
-  const [settings, setSettings] = useState<ExpoSpeechRecognitionOptions>({
+  const [settings, setSettings] = useState<SpeechRecognitionOptions>({
     lang: "en-US",
     interimResults: true,
     maxAlternatives: 3,
@@ -145,7 +145,7 @@ export default function App() {
     setStatus("starting");
 
     const microphonePermissions =
-      await ExpoSpeechRecognitionModule.requestMicrophonePermissionsAsync();
+      await SpeechRecognitionModule.requestMicrophonePermissionsAsync();
     console.log("Microphone permissions", microphonePermissions);
     if (!microphonePermissions.granted) {
       setError({ error: "not-allowed", message: "Permissions not granted" });
@@ -155,7 +155,7 @@ export default function App() {
 
     if (!settings.requiresOnDeviceRecognition && Platform.OS === "ios") {
       const speechRecognizerPermissions =
-        await ExpoSpeechRecognitionModule.requestSpeechRecognizerPermissionsAsync();
+        await SpeechRecognitionModule.requestSpeechRecognizerPermissionsAsync();
       console.log("Speech recognizer permissions", speechRecognizerPermissions);
       if (!speechRecognizerPermissions.granted) {
         if (speechRecognizerPermissions.restricted) {
@@ -176,7 +176,7 @@ export default function App() {
 
     console.log(settings);
 
-    ExpoSpeechRecognitionModule.start(settings);
+    SpeechRecognitionModule.start(settings);
   };
 
   return (
@@ -235,12 +235,12 @@ export default function App() {
               <BigButton
                 title="Stop"
                 disabled={status !== "recognizing"}
-                onPress={() => ExpoSpeechRecognitionModule.stop()}
+                onPress={() => SpeechRecognitionModule.stop()}
               />
               <BigButton
                 title="Abort"
                 disabled={status !== "recognizing"}
-                onPress={() => ExpoSpeechRecognitionModule.abort()}
+                onPress={() => SpeechRecognitionModule.abort()}
               />
             </View>
           )}
@@ -251,8 +251,8 @@ export default function App() {
 }
 
 function Settings(props: {
-  value: ExpoSpeechRecognitionOptions;
-  onChange: (v: ExpoSpeechRecognitionOptions) => void;
+  value: SpeechRecognitionOptions;
+  onChange: (v: SpeechRecognitionOptions) => void;
 }) {
   const { value: settings, onChange } = props;
 
@@ -260,9 +260,9 @@ function Settings(props: {
     "general",
   );
 
-  const handleChange = <T extends keyof ExpoSpeechRecognitionOptions>(
+  const handleChange = <T extends keyof SpeechRecognitionOptions>(
     key: T,
-    value: ExpoSpeechRecognitionOptions[T],
+    value: SpeechRecognitionOptions[T],
   ) => {
     onChange({ ...props.value, [key]: value });
   };
@@ -316,10 +316,10 @@ function Settings(props: {
 }
 
 function IOSSettings(props: {
-  value: ExpoSpeechRecognitionOptions;
-  onChange: <T extends keyof ExpoSpeechRecognitionOptions>(
+  value: SpeechRecognitionOptions;
+  onChange: <T extends keyof SpeechRecognitionOptions>(
     key: T,
-    value: ExpoSpeechRecognitionOptions[T],
+    value: SpeechRecognitionOptions[T],
   ) => void;
 }) {
   const { value: settings, onChange: handleChange } = props;
@@ -434,10 +434,10 @@ function IOSSettings(props: {
 }
 
 function GeneralSettings(props: {
-  value: ExpoSpeechRecognitionOptions;
-  onChange: <T extends keyof ExpoSpeechRecognitionOptions>(
+  value: SpeechRecognitionOptions;
+  onChange: <T extends keyof SpeechRecognitionOptions>(
     key: T,
-    value: ExpoSpeechRecognitionOptions[T],
+    value: SpeechRecognitionOptions[T],
   ) => void;
 }) {
   const { value: settings, onChange: handleChange } = props;
@@ -448,7 +448,7 @@ function GeneralSettings(props: {
   }>({ locales: [], installedLocales: [] });
 
   useEffect(() => {
-    ExpoSpeechRecognitionModule.getSupportedLocales({
+    SpeechRecognitionModule.getSupportedLocales({
       androidRecognitionServicePackage:
         settings.androidRecognitionServicePackage,
     })
@@ -631,17 +631,17 @@ const androidIntentBooleanInputOptions = [
 ] satisfies (keyof AndroidIntentOptions)[];
 
 function AndroidSettings(props: {
-  value: ExpoSpeechRecognitionOptions;
-  onChange: <T extends keyof ExpoSpeechRecognitionOptions>(
+  value: SpeechRecognitionOptions;
+  onChange: <T extends keyof SpeechRecognitionOptions>(
     key: T,
-    value: ExpoSpeechRecognitionOptions[T],
+    value: SpeechRecognitionOptions[T],
   ) => void;
 }) {
   const { value: settings, onChange: handleChange } = props;
   const defaultRecognitionService =
-    ExpoSpeechRecognitionModule.getDefaultRecognitionService().packageName;
+    SpeechRecognitionModule.getDefaultRecognitionService().packageName;
   const assistantService =
-    ExpoSpeechRecognitionModule.getAssistantService().packageName;
+    SpeechRecognitionModule.getAssistantService().packageName;
   return (
     <View style={styles.gap1}>
       <View>
@@ -746,10 +746,10 @@ function AndroidSettings(props: {
 }
 
 function OtherSettings(props: {
-  value: ExpoSpeechRecognitionOptions;
-  onChange: <T extends keyof ExpoSpeechRecognitionOptions>(
+  value: SpeechRecognitionOptions;
+  onChange: <T extends keyof SpeechRecognitionOptions>(
     key: T,
-    value: ExpoSpeechRecognitionOptions[T],
+    value: SpeechRecognitionOptions[T],
   ) => void;
 }) {
   const { value: settings, onChange: handleChange } = props;
@@ -779,7 +779,7 @@ function OtherSettings(props: {
         <SmallButton
           title="Get permissions"
           onPress={() => {
-            ExpoSpeechRecognitionModule.getPermissionsAsync().then((result) => {
+            SpeechRecognitionModule.getPermissionsAsync().then((result) => {
               Alert.alert("Get Permissions result", JSON.stringify(result));
             });
           }}
@@ -787,7 +787,7 @@ function OtherSettings(props: {
         <SmallButton
           title="Request permissions"
           onPress={() => {
-            ExpoSpeechRecognitionModule.requestPermissionsAsync().then(
+            SpeechRecognitionModule.requestPermissionsAsync().then(
               (result) => {
                 Alert.alert(
                   "RequestPermissions result",
@@ -800,7 +800,7 @@ function OtherSettings(props: {
         <SmallButton
           title="Get microphone permissions"
           onPress={() => {
-            ExpoSpeechRecognitionModule.getMicrophonePermissionsAsync().then(
+            SpeechRecognitionModule.getMicrophonePermissionsAsync().then(
               (result) => {
                 Alert.alert("Result", JSON.stringify(result));
               },
@@ -810,7 +810,7 @@ function OtherSettings(props: {
         <SmallButton
           title="Request microphone permissions"
           onPress={() => {
-            ExpoSpeechRecognitionModule.requestMicrophonePermissionsAsync().then(
+            SpeechRecognitionModule.requestMicrophonePermissionsAsync().then(
               (result) => {
                 Alert.alert("Result", JSON.stringify(result));
               },
@@ -820,7 +820,7 @@ function OtherSettings(props: {
         <SmallButton
           title="Get speech recognizer permissions"
           onPress={() => {
-            ExpoSpeechRecognitionModule.getSpeechRecognizerPermissionsAsync().then(
+            SpeechRecognitionModule.getSpeechRecognizerPermissionsAsync().then(
               (result) => {
                 Alert.alert("Result", JSON.stringify(result));
               },
@@ -830,7 +830,7 @@ function OtherSettings(props: {
         <SmallButton
           title="Request speech recognizer permissions"
           onPress={() => {
-            ExpoSpeechRecognitionModule.requestSpeechRecognizerPermissionsAsync().then(
+            SpeechRecognitionModule.requestSpeechRecognizerPermissionsAsync().then(
               (result) => {
                 Alert.alert("Result", JSON.stringify(result));
               },
@@ -840,7 +840,7 @@ function OtherSettings(props: {
         <SmallButton
           title="Get speech recognizer state"
           onPress={() => {
-            ExpoSpeechRecognitionModule.getStateAsync().then((state) => {
+            SpeechRecognitionModule.getStateAsync().then((state) => {
               console.log("Current state:", state);
               Alert.alert("Current state", state);
             });
@@ -850,7 +850,7 @@ function OtherSettings(props: {
           title="Call isRecognitionAvailable()"
           onPress={() => {
             const isAvailable =
-              ExpoSpeechRecognitionModule.isRecognitionAvailable();
+              SpeechRecognitionModule.isRecognitionAvailable();
             Alert.alert("isRecognitionAvailable()", isAvailable.toString());
           }}
         />
@@ -858,7 +858,7 @@ function OtherSettings(props: {
           <SmallButton
             title="Set audio session active state"
             onPress={() => {
-              ExpoSpeechRecognitionModule.setAudioSessionActiveIOS(true, {
+              SpeechRecognitionModule.setAudioSessionActiveIOS(true, {
                 notifyOthersOnDeactivation: false,
               });
             }}
@@ -900,7 +900,7 @@ function OtherSettings(props: {
                   title="Transcribe the recording"
                   color="#539bf5"
                   onPress={() => {
-                    ExpoSpeechRecognitionModule.start({
+                    SpeechRecognitionModule.start({
                       lang: "en-US",
                       interimResults: true,
                       audioSource: {

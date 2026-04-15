@@ -41,17 +41,6 @@
     },
     "plugins": [
       [
-        "../app.plugin",
-        {
-          "microphonePermission": "Allow $(PRODUCT_NAME) to use the microphone.",
-          "speechRecognitionPermission": "Allow $(PRODUCT_NAME) to use speech recognition.",
-          "androidSpeechServicePackages": [
-            "com.google.android.googlequicksearchbox",
-            "com.google.android.tts"
-          ]
-        }
-      ],
-      [
         "expo-asset",
         {
           "assets": [

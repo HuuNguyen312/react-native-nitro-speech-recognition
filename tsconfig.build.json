@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "strict": false,
+    "noImplicitAny": false,
+    "lib": ["ES2020", "DOM"]
+  },
+  "exclude": ["**/__mocks__/*", "**/__tests__/*", "nitrogen", "example"]
+}

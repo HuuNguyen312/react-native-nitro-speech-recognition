@@ -1,4 +1,4 @@
-import { ExpoSpeechRecognitionModule } from "expo-speech-recognition";
+import { SpeechRecognitionModule } from "expo-speech-recognition";
 import { useState } from "react";
 import { Alert, Text, TouchableNativeFeedback, View } from "react-native";
 
@@ -10,7 +10,7 @@ export function DownloadOfflineModelButton(props: { locale: string }) {
   const handleDownload = () => {
     setDownloading({ locale: props.locale });
 
-    ExpoSpeechRecognitionModule.androidTriggerOfflineModelDownload({
+    SpeechRecognitionModule.androidTriggerOfflineModelDownload({
       locale: props.locale,
     })
       .then((result) => {

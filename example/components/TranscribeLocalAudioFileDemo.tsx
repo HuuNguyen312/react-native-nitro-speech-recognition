@@ -1,7 +1,7 @@
 import { useAssets } from "expo-asset";
 import {
   AudioEncodingAndroid,
-  ExpoSpeechRecognitionModule,
+  SpeechRecognitionModule,
   useSpeechRecognitionEvent,
 } from "expo-speech-recognition";
 import { useState } from "react";
@@ -23,7 +23,7 @@ export function TranscribeLocalAudioFileDemo() {
     }
 
     setBusy(true);
-    ExpoSpeechRecognitionModule.start({
+    SpeechRecognitionModule.start({
       lang: "en-US",
       interimResults: true,
       requiresOnDeviceRecognition: Platform.OS === "ios",

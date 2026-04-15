@@ -1,5 +1,5 @@
 import { NitroModules } from "react-native-nitro-modules";
-import type { SpeechRecognition } from "../nitrogen/generated/shared/c++/HybridSpeechRecognitionSpec";
+import type { SpeechRecognition } from "./specs/SpeechRecognition.nitro";
 import type {
   SpeechRecognitionNativeEventMap,
   SpeechRecognitionOptions,

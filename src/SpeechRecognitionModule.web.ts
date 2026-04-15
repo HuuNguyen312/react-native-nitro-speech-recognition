@@ -110,8 +110,7 @@ class SpeechRecognitionModuleWeb {
       listener(eventPayload);
     };
 
-    // @ts-expect-error
-    _speechRecognitionRef?.addEventListener(eventName, nativeListener);
+    _speechRecognitionRef?.addEventListener(eventName, nativeListener as any);
     if (!this._nativeListeners.has(eventName)) {
       this._nativeListeners.set(eventName, new Set());
     }

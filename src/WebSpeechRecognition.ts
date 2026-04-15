@@ -8,31 +8,32 @@ type Subscription = { remove: () => void };
 
 const noop = () => {};
 
-const createEventData = (target: EventTarget) => ({
-  AT_TARGET: 2 as const,
-  bubbles: false,
-  BUBBLING_PHASE: 3 as const,
-  cancelable: false,
-  CAPTURING_PHASE: 1 as const,
-  composed: false,
-  composedPath: () => [],
-  currentTarget: target,
-  defaultPrevented: false,
-  eventPhase: 0,
-  isTrusted: true,
-  NONE: 0 as const,
-  preventDefault: noop,
-  resultIndex: 0,
-  stopImmediatePropagation: noop,
-  stopPropagation: noop,
-  target,
-  timeStamp: 0,
-  type: "",
-  cancelBubble: false,
-  returnValue: false,
-  srcElement: null,
-  initEvent: noop,
-});
+const createEventData = (target: EventTarget) =>
+  ({
+    AT_TARGET: 2 as const,
+    bubbles: false,
+    BUBBLING_PHASE: 3 as const,
+    cancelable: false,
+    CAPTURING_PHASE: 1 as const,
+    composed: false,
+    composedPath: () => [],
+    currentTarget: target,
+    defaultPrevented: false,
+    eventPhase: 0 as const,
+    isTrusted: true,
+    NONE: 0 as const,
+    preventDefault: noop,
+    resultIndex: 0,
+    stopImmediatePropagation: noop,
+    stopPropagation: noop,
+    target,
+    timeStamp: 0,
+    type: "",
+    cancelBubble: false,
+    returnValue: false,
+    srcElement: null,
+    initEvent: noop,
+  }) as unknown as Event & { resultIndex: number };
 
 type NativeEventAndListener<
   TEventName extends keyof SpeechRecognitionNativeEventMap,
@@ -326,8 +327,7 @@ export class WebSpeechRecognition implements SpeechRecognition {
 
     const subscription = SpeechRecognitionModule.addListener(
       enhancedEvent.eventName,
-      // @ts-expect-error
-      enhancedEvent.nativeListener,
+      enhancedEvent.nativeListener as any,
     );
 
     this.#subscriptionMap.set(listener, [subscription]);

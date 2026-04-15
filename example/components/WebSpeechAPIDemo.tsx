@@ -1,6 +1,6 @@
 import {
-  ExpoWebSpeechRecognition,
-  ExpoSpeechRecognitionModule,
+  WebSpeechRecognition,
+  SpeechRecognitionModule,
 } from "expo-speech-recognition";
 import { useEffect, useMemo, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
@@ -18,7 +18,7 @@ export function WebSpeechAPIDemo() {
     transcript: string;
   }>(null);
 
-  const recognizer = useMemo(() => new ExpoWebSpeechRecognition(), []);
+  const recognizer = useMemo(() => new WebSpeechRecognition(), []);
 
   useEffect(() => {
     if (!listening) {
@@ -59,7 +59,7 @@ export function WebSpeechAPIDemo() {
     setListening(true);
     setTranscription(null);
     setError(null);
-    ExpoSpeechRecognitionModule.requestPermissionsAsync().then((result) => {
+    SpeechRecognitionModule.requestPermissionsAsync().then((result) => {
       console.log("Permissions", result);
       if (!result.granted) {
         console.log("Permissions not granted", result);

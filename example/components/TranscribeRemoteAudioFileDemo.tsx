@@ -1,6 +1,6 @@
 import { File, Paths } from "expo-file-system";
 import {
-  ExpoSpeechRecognitionModule,
+  SpeechRecognitionModule,
   useSpeechRecognitionEvent,
   type AudioEncodingAndroidValue,
 } from "expo-speech-recognition";
@@ -31,7 +31,7 @@ export function TranscribeRemoteAudioFileDemo(props: {
       return;
     }
     console.log("Downloaded file", file);
-    ExpoSpeechRecognitionModule.start({
+    SpeechRecognitionModule.start({
       lang: "en-US",
       interimResults: true,
       audioSource: {
