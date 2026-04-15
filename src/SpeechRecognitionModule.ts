@@ -14,9 +14,15 @@ import type {
 
 type Subscription = { remove: () => void };
 
-const native = NitroModules.createHybridObject<SpeechRecognition>(
-  "SpeechRecognition",
-);
+let _native: SpeechRecognition | null = null;
+function getNative(): SpeechRecognition {
+  if (!_native) {
+    _native = NitroModules.createHybridObject<SpeechRecognition>(
+      "SpeechRecognition",
+    );
+  }
+  return _native;
+}
 
 // Maps event names to their native addXxxListener method names
 const eventToNativeMethod: Record<
@@ -120,7 +126,8 @@ class SpeechRecognitionModuleImpl {
 
     // Register native callbacks for all event types.
     // Each callback fans out to all registered JS listeners for that event.
-    native.addResultListener((event) => {
+    const n = getNative();
+    n.addResultListener((event) => {
       this.dispatch("result", {
         isFinal: event.isFinal,
         results: event.results.map((r) => ({
@@ -136,7 +143,7 @@ class SpeechRecognitionModuleImpl {
       });
     });
 
-    native.addErrorListener((event) => {
+    n.addErrorListener((event) => {
       this.dispatch("error", {
         error: event.error as any,
         message: event.message,
@@ -144,23 +151,23 @@ class SpeechRecognitionModuleImpl {
       });
     });
 
-    native.addStartListener(() => this.dispatch("start", null));
-    native.addEndListener(() => this.dispatch("end", null));
-    native.addSpeechStartListener(() => this.dispatch("speechstart", null));
-    native.addSpeechEndListener(() => this.dispatch("speechend", null));
+    n.addStartListener(() => this.dispatch("start", null));
+    n.addEndListener(() => this.dispatch("end", null));
+    n.addSpeechStartListener(() => this.dispatch("speechstart", null));
+    n.addSpeechEndListener(() => this.dispatch("speechend", null));
 
-    native.addAudioStartListener((event) => {
+    n.addAudioStartListener((event) => {
       this.dispatch("audiostart", { uri: event.uri ?? null });
     });
-    native.addAudioEndListener((event) => {
+    n.addAudioEndListener((event) => {
       this.dispatch("audioend", { uri: event.uri ?? null });
     });
 
-    native.addSoundStartListener(() => this.dispatch("soundstart", null));
-    native.addSoundEndListener(() => this.dispatch("soundend", null));
-    native.addNoMatchListener(() => this.dispatch("nomatch", null));
+    n.addSoundStartListener(() => this.dispatch("soundstart", null));
+    n.addSoundEndListener(() => this.dispatch("soundend", null));
+    n.addNoMatchListener(() => this.dispatch("nomatch", null));
 
-    native.addLanguageDetectionListener((event) => {
+    n.addLanguageDetectionListener((event) => {
       this.dispatch("languagedetection", {
         detectedLanguage: event.detectedLanguage,
         confidence: event.confidence,
@@ -168,7 +175,7 @@ class SpeechRecognitionModuleImpl {
       });
     });
 
-    native.addVolumeChangeListener((event) => {
+    n.addVolumeChangeListener((event) => {
       this.dispatch("volumechange", { value: event.value });
     });
   }
@@ -214,41 +221,41 @@ class SpeechRecognitionModuleImpl {
 
   start(options: SpeechRecognitionOptions): void {
     this.registerAllNativeListeners();
-    native.start(toNativeOptions(options));
+    getNative().start(toNativeOptions(options));
   }
 
   stop(): void {
-    native.stop();
+    getNative().stop();
   }
 
   abort(): void {
-    native.abort();
+    getNative().abort();
   }
 
   // --- Permission methods ---
 
   requestPermissionsAsync(): Promise<SpeechRecognitionPermissionResponse> {
-    return native.requestPermissionsAsync() as any;
+    return getNative().requestPermissionsAsync() as any;
   }
 
   getPermissionsAsync(): Promise<SpeechRecognitionPermissionResponse> {
-    return native.getPermissionsAsync() as any;
+    return getNative().getPermissionsAsync() as any;
   }
 
   getMicrophonePermissionsAsync(): Promise<PermissionResponse> {
-    return native.getMicrophonePermissionsAsync() as any;
+    return getNative().getMicrophonePermissionsAsync() as any;
   }
 
   requestMicrophonePermissionsAsync(): Promise<PermissionResponse> {
-    return native.requestMicrophonePermissionsAsync() as any;
+    return getNative().requestMicrophonePermissionsAsync() as any;
   }
 
   getSpeechRecognizerPermissionsAsync(): Promise<SpeechRecognitionPermissionResponse> {
-    return native.getSpeechRecognizerPermissionsAsync() as any;
+    return getNative().getSpeechRecognizerPermissionsAsync() as any;
   }
 
   requestSpeechRecognizerPermissionsAsync(): Promise<SpeechRecognitionPermissionResponse> {
-    return native.requestSpeechRecognizerPermissionsAsync() as any;
+    return getNative().requestSpeechRecognizerPermissionsAsync() as any;
   }
 
   // --- Query methods ---
@@ -256,38 +263,38 @@ class SpeechRecognitionModuleImpl {
   getSupportedLocales(options?: {
     androidRecognitionServicePackage?: string;
   }): Promise<{ locales: string[]; installedLocales: string[] }> {
-    return native.getSupportedLocales({
+    return getNative().getSupportedLocales({
       androidRecognitionServicePackage:
         options?.androidRecognitionServicePackage ?? undefined,
     }) as any;
   }
 
   getSpeechRecognitionServices(): string[] {
-    return native.getSpeechRecognitionServices();
+    return getNative().getSpeechRecognitionServices();
   }
 
   getDefaultRecognitionService(): { packageName: string } {
-    return native.getDefaultRecognitionService();
+    return getNative().getDefaultRecognitionService();
   }
 
   getAssistantService(): { packageName: string } {
-    return native.getAssistantService();
+    return getNative().getAssistantService();
   }
 
   supportsOnDeviceRecognition(): boolean {
-    return native.supportsOnDeviceRecognition();
+    return getNative().supportsOnDeviceRecognition();
   }
 
   supportsRecording(): boolean {
-    return native.supportsRecording();
+    return getNative().supportsRecording();
   }
 
   isRecognitionAvailable(): boolean {
-    return native.isRecognitionAvailable();
+    return getNative().isRecognitionAvailable();
   }
 
   getStateAsync(): Promise<SpeechRecognitionState> {
-    return native.getStateAsync() as any;
+    return getNative().getStateAsync() as any;
   }
 
   // --- Android-specific ---
@@ -295,13 +302,13 @@ class SpeechRecognitionModuleImpl {
   androidTriggerOfflineModelDownload(options: {
     locale: string;
   }): Promise<{ status: string; message: string }> {
-    return native.androidTriggerOfflineModelDownload(options) as any;
+    return getNative().androidTriggerOfflineModelDownload(options) as any;
   }
 
   // --- iOS-specific ---
 
   setCategoryIOS(options: SetCategoryOptions): void {
-    native.setCategoryIOS({
+    getNative().setCategoryIOS({
       category: options.category,
       categoryOptions: options.categoryOptions,
       mode: options.mode ?? undefined,
@@ -313,14 +320,14 @@ class SpeechRecognitionModuleImpl {
     categoryOptions: AVAudioSessionCategoryOptionsValue[];
     mode: AVAudioSessionModeValue;
   } {
-    return native.getAudioSessionCategoryAndOptionsIOS() as any;
+    return getNative().getAudioSessionCategoryAndOptionsIOS() as any;
   }
 
   setAudioSessionActiveIOS(
     value: boolean,
     options?: { notifyOthersOnDeactivation: boolean },
   ): void {
-    native.setAudioSessionActiveIOS(
+    getNative().setAudioSessionActiveIOS(
       value,
       options?.notifyOthersOnDeactivation ?? true,
     );
