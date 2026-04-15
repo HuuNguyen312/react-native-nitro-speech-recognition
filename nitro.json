@@ -1,0 +1,22 @@
+{
+  "cxxNamespace": ["speechrecognition"],
+  "ios": {
+    "iosModuleName": "NitroSpeechRecognition"
+  },
+  "android": {
+    "androidNamespace": ["speechrecognition"],
+    "androidCxxLibName": "NitroSpeechRecognition"
+  },
+  "autolinking": {
+    "SpeechRecognition": {
+      "ios": {
+        "language": "swift",
+        "implementationClassName": "HybridSpeechRecognition"
+      },
+      "android": {
+        "language": "kotlin",
+        "implementationClassName": "HybridSpeechRecognition"
+      }
+    }
+  }
+}

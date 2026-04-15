@@ -294,7 +294,7 @@ actor ExpoSpeechRecognizer: ObservableObject {
 
     let chunkDelayMillis: Int
     if let options = self.options, let specifiedDelay = options.audioSource?.chunkDelayMillis {
-      chunkDelayMillis = specifiedDelay
+      chunkDelayMillis = Int(specifiedDelay)
     } else if self.options?.requiresOnDeviceRecognition == true {
       chunkDelayMillis = 15  // On-device recognition
     } else {
@@ -580,8 +580,9 @@ actor ExpoSpeechRecognizer: ObservableObject {
       request.requiresOnDeviceRecognition = options.requiresOnDeviceRecognition
     }
 
-    if let taskHint = options.iosTaskHint {
-      request.taskHint = taskHint.sfSpeechRecognitionTaskHint
+    if let taskHint = options.iosTaskHint,
+       let mapped = PermissionHelper.mapTaskHint(taskHint) {
+      request.taskHint = mapped
     }
 
     if let contextualStrings = options.contextualStrings {
@@ -599,16 +600,13 @@ actor ExpoSpeechRecognizer: ObservableObject {
     let audioSession = AVAudioSession.sharedInstance()
 
     if let options: SetCategoryOptions {
-      // Convert the array of category options to a bitmask
-      let categoryOptions = options.categoryOptions.reduce(
-        AVAudioSession.CategoryOptions()
-      ) {
-        result, option in
-        result.union(option.avCategoryOption)
-      }
+      let categoryOptions = PermissionHelper.mapCategoryOptions(options.categoryOptions)
+      let category = PermissionHelper.mapCategory(options.category)
+      let mode = PermissionHelper.mapMode(options.mode)
+
       try audioSession.setCategory(
-        options.category.avCategory,
-        mode: options.mode.avMode,
+        category,
+        mode: mode,
         options: categoryOptions
       )
     } else {
